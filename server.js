@@ -1,24 +1,34 @@
 const express = require("express");
 require("dotenv").config();
 
+const fileRoutes = require("./routes/fileRoutes");
+
+
 const app = express();
 
 
+// middleware
 app.use(express.json());
 
 
-app.get("/",(req,res)=>{
+// test route
+app.get("/", (req, res) => {
 
     res.send("File Upload API running");
 
-})
+});
+
+
+// file routes
+app.use("/api/files", fileRoutes);
+
 
 
 const PORT = process.env.PORT || 5000;
 
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
 
-    console.log(`Server running on ${PORT}`);
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
 
-})
+});
