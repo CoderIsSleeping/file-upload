@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 
 const fileRoutes = require("./routes/fileRoutes");
+const errorHandler = require("./middleware/errorMiddleware");
 
 
 const app = express();
@@ -22,7 +23,7 @@ app.get("/", (req, res) => {
 // file routes
 app.use("/api/files", fileRoutes);
 
-
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
