@@ -1,5 +1,7 @@
 const express = require("express");
 require("dotenv").config();
+const connectDB = require("./config/db");
+connectDB();
 
 const fileRoutes = require("./routes/fileRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
