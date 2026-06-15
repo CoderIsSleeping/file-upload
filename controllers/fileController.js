@@ -60,8 +60,71 @@ const uploadFile = async(req,res)=>{
 
 };
 
+const getAllFiles = async(req,res)=>{
+
+
+    const files = await File.find();
+
+
+    res.status(200).json({
+
+
+        success:true,
+
+
+        count:files.length,
+
+
+        files:files
+
+
+    });
+
+
+};
+
+
+
+const getSingleFile = async(req,res)=>{
+
+
+    const file = await File.findById(
+        req.params.id
+    );
+
+
+    if(!file){
+
+
+        return res.status(404).json({
+
+            success:false,
+
+            message:"File not found"
+
+        });
+
+    }
+
+
+
+    res.status(200).json({
+
+
+        success:true,
+
+
+        file:file
+
+
+    });
+
+
+};
 
 
 module.exports={
-    uploadFile
+    uploadFile,
+    getAllFiles,
+    getSingleFile
 };
