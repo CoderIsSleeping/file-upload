@@ -1,13 +1,12 @@
 const express = require("express");
-
 const router = express.Router();
-
-
 const upload = require("../middleware/uploadMiddleware");
 
 const { uploadFile,
     getAllFiles,
-    getSingleFile
+    getSingleFile,
+    downloadFile,
+    deleteFile
  } = require("../controllers/fileController");
 
 
@@ -28,6 +27,16 @@ router.get(
 router.get(
     "/:id",
     getSingleFile
+);
+
+router.get(
+    "/download/:id",
+    downloadFile
+);
+
+router.delete(
+    "/:id",
+    deleteFile
 );
 
 

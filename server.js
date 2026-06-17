@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 require("dotenv").config();
 const connectDB = require("./config/db");
 connectDB();
@@ -12,6 +13,12 @@ const app = express();
 
 // middleware
 app.use(express.json());
+app.use(
+    "/uploads",
+    express.static(
+        path.join(__dirname,"uploads")
+    )
+);
 
 
 // test route
