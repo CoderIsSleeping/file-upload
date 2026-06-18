@@ -43,7 +43,13 @@ const fileSchema = new mongoose.Schema(
     publicId:{
     type:String,
     required:true
-}
+    },
+
+    owner:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User",
+    required:true
+    }
 
 },
 {

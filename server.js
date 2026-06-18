@@ -3,7 +3,7 @@ const path = require("path");
 require("dotenv").config();
 const connectDB = require("./config/db");
 connectDB();
-
+require("./models/User");
 const fileRoutes = require("./routes/fileRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 

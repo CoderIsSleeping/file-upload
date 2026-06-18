@@ -19,37 +19,35 @@ const uploadFile = async(req,res)=>{
     }
 
 
-
-    // upload local file to cloudinary
+    // upload to cloudinary
     const result = await cloudinary.uploader.upload(
         req.file.path
     );
 
 
+    // remove local temporary file
+    fs.unlinkSync(req.file.path);
 
+
+
+    // save metadata
     const savedFile = await File.create({
-
 
         filename:req.file.filename,
 
-
         originalName:req.file.originalname,
-
 
         path:req.file.path,
 
-
         url:result.secure_url,
-
 
         publicId:result.public_id,
 
-
         mimetype:req.file.mimetype,
 
+        size:req.file.size,
 
-        size:req.file.size
-
+        owner:req.body.owner
 
     });
 
@@ -57,15 +55,11 @@ const uploadFile = async(req,res)=>{
 
     res.status(201).json({
 
-
         success:true,
-
 
         message:"File uploaded successfully",
 
-
         file:savedFile
-
 
     });
 
@@ -75,7 +69,8 @@ const uploadFile = async(req,res)=>{
 const getAllFiles = async(req,res)=>{
 
 
-    const files = await File.find();
+    const files = await File.find()
+    .populate("owner");
 
 
     res.status(200).json({
@@ -136,10 +131,13 @@ const getSingleFile = async(req,res)=>{
 const downloadFile = async(req,res)=>{
 
 
-    const file = await File.findById(req.params.id);
+    const file = await File.findById(
+        req.params.id
+    );
 
 
     if(!file){
+
 
         return res.status(404).json({
 
@@ -153,18 +151,7 @@ const downloadFile = async(req,res)=>{
 
 
 
-    const filePath = path.join(
-
-        __dirname,
-
-        "..",
-
-        file.path
-
-    );
-
-
-    res.download(filePath);
+    res.redirect(file.url);
 
 
 };
@@ -188,16 +175,21 @@ const deleteFile = async(req,res)=>{
 
         });
 
+
     }
 
 
 
-    // delete physical file
-    fs.unlinkSync(file.path);
+    // delete from cloudinary
+
+    await cloudinary.uploader.destroy(
+        file.publicId
+    );
 
 
 
-    // delete database record
+    // delete from mongodb
+
     await File.findByIdAndDelete(
         req.params.id
     );

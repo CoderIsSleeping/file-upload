@@ -18,14 +18,14 @@ router.post(
 );
 
 router.get(
-    "/",
+    "/files",
     getAllFiles
 );
 
 
 
 router.get(
-    "/:id",
+    "/files/:id",
     getSingleFile
 );
 
@@ -35,7 +35,7 @@ router.get(
 );
 
 router.delete(
-    "/:id",
+    "/delete/:id",
     deleteFile
 );
 
