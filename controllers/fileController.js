@@ -1,5 +1,4 @@
 const File = require("../models/File");
-const path= require("path");
 const fs = require("fs");
 const cloudinary = require("../config/cloudinary");
 const validateFile = require("../utils/validateFile");
@@ -45,7 +44,10 @@ const uploadFile = async(req,res)=>{
 
     // upload to cloudinary
     const result = await cloudinary.uploader.upload(
-        req.file.path
+        req.file.path,
+        {
+            folder:"file-upload-service"
+        }
     );
 
 

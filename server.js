@@ -1,27 +1,16 @@
 const express = require("express");
-const path = require("path");
 require("dotenv").config();
 const connectDB = require("./config/db");
-connectDB();
 require("./models/User");
 const fileRoutes = require("./routes/fileRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 
-
 const app = express();
 
 
-// middleware
 app.use(express.json());
-app.use(
-    "/uploads",
-    express.static(
-        path.join(__dirname,"uploads")
-    )
-);
 
 
-// test route
 app.get("/", (req, res) => {
 
     res.send("File Upload API running");
@@ -29,16 +18,20 @@ app.get("/", (req, res) => {
 });
 
 
-// file routes
 app.use("/api/files", fileRoutes);
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
+const startServer = async () => {
+    await connectDB();
 
-app.listen(PORT, () => {
+    app.listen(PORT, () => {
+        console.log(
+            `Server running at http://localhost:${PORT}`
+        );
+    });
+};
 
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
-
-});
+startServer();
