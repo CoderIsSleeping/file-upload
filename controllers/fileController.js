@@ -8,29 +8,6 @@ const uploadFile = async(req,res)=>{
 
     if(!req.file){
 
-        const isValid = await validateFile(
-            req.file.path
-        );
-
-
-        if(!isValid){
-
-
-            fs.unlinkSync(req.file.path);
-
-
-            return res.status(400).json({
-
-                success:false,
-
-                message:"Fake or unsupported file"
-
-            });
-
-
-        }
-
-
         return res.status(400).json({
 
             success:false,
@@ -42,52 +19,85 @@ const uploadFile = async(req,res)=>{
     }
 
 
-    // upload to cloudinary
-    const result = await cloudinary.uploader.upload(
-        req.file.path,
-        {
-            folder:"file-upload-service"
+    let cloudFile;
+
+
+    try{
+
+
+        cloudFile = await cloudinary.uploader.upload(
+            req.file.path,
+            {
+                folder:"file-upload-service"
+            }
+        );
+
+
+
+        fs.unlinkSync(req.file.path);
+
+
+
+        const savedFile = await File.create({
+
+            filename:req.file.filename,
+
+            originalName:req.file.originalname,
+
+            url:cloudFile.secure_url,
+
+            publicId:cloudFile.public_id,
+
+            mimetype:req.file.mimetype,
+
+            size:req.file.size,
+
+            owner:req.body.owner
+
+        });
+
+
+
+        res.status(201).json({
+
+            success:true,
+
+            file:savedFile
+
+        });
+
+
+    }
+
+
+    catch(error){
+
+
+        if(cloudFile){
+
+
+            await cloudinary.uploader.destroy(
+                cloudFile.public_id
+            );
+
+
         }
-    );
 
 
-    // remove local temporary file
-    fs.unlinkSync(req.file.path);
+        if(req.file.path && fs.existsSync(req.file.path)){
 
 
+            fs.unlinkSync(req.file.path);
 
-    // save metadata
-    const savedFile = await File.create({
 
-        filename:req.file.filename,
-
-        originalName:req.file.originalname,
-
-        path:req.file.path,
-
-        url:result.secure_url,
-
-        publicId:result.public_id,
-
-        mimetype:req.file.mimetype,
-
-        size:req.file.size,
-
-        owner:req.body.owner
-
-    });
+        }
 
 
 
-    res.status(201).json({
+        throw error;
 
-        success:true,
 
-        message:"File uploaded successfully",
-
-        file:savedFile
-
-    });
+    }
 
 
 };
