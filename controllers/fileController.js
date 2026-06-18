@@ -2,11 +2,35 @@ const File = require("../models/File");
 const path= require("path");
 const fs = require("fs");
 const cloudinary = require("../config/cloudinary");
+const validateFile = require("../utils/validateFile");
 
 const uploadFile = async(req,res)=>{
 
 
     if(!req.file){
+
+        const isValid = await validateFile(
+            req.file.path
+        );
+
+
+        if(!isValid){
+
+
+            fs.unlinkSync(req.file.path);
+
+
+            return res.status(400).json({
+
+                success:false,
+
+                message:"Fake or unsupported file"
+
+            });
+
+
+        }
+
 
         return res.status(400).json({
 
@@ -207,10 +231,39 @@ const deleteFile = async(req,res)=>{
 
 };
 
+const getUserFiles = async(req,res)=>{
+
+
+    const files = await File.find({
+
+        owner:req.params.userId
+
+    })
+    .populate("owner");
+
+
+
+    res.status(200).json({
+
+
+        success:true,
+
+        count:files.length,
+
+        files:files
+
+
+    });
+
+
+};
+
+
 module.exports={
     uploadFile,
     getAllFiles,
     getSingleFile,
     downloadFile,
-    deleteFile
+    deleteFile,
+    getUserFiles
 };

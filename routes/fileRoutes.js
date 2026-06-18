@@ -6,7 +6,8 @@ const { uploadFile,
     getAllFiles,
     getSingleFile,
     downloadFile,
-    deleteFile
+    deleteFile,
+    getUserFiles
  } = require("../controllers/fileController");
 
 
@@ -22,7 +23,10 @@ router.get(
     getAllFiles
 );
 
-
+router.get(
+    "/user/:userId",
+    getUserFiles
+);
 
 router.get(
     "/files/:id",
@@ -38,6 +42,7 @@ router.delete(
     "/delete/:id",
     deleteFile
 );
+
 
 
 
